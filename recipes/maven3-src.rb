@@ -19,28 +19,30 @@
 
 include_recipe "java"
 
-remote_file "maven3_src" do
-  path "/tmp"
+remote_file "/tmp/apache-maven.tar.gz" do
   source node['maven']['m3_download_url']
   checksum "4fb4a392d879ebcd19dc5a05f9d779aed7f1e3356c8c9e6200b15f8b6e1f85e0"
 end
 
+directory node['maven']['m2_home']
+
 bash "install_maven3" do
-  tarball = node['maven']['m3_download_url'].split('/')[-1]
-  folder_name = tarball.partition('.tar.gz')[0]
+  folder_name = node['maven']['m3_download_url'].split('/')[-1].split('-bin.tar.gz')[0]
+  puts folder_name
   cwd "/tmp"
   user "root"
   code <<-EOH
-    tar xvzf #{tarball}
+    tar xvzf apache-maven.tar.gz
     cp -r #{folder_name}/* #{node['maven']['m2_home']}
-    rm -rf #{tarball} #{folder_name}
+    rm -rf apache-maven.tar.gz #{folder_name}
   EOH
 end
 
 template "/etc/mavenrc" do
   source "mavenrc.erb"
+  mode "0755"
 end
 
-link "#{node['maven']['m2_home']}/bin/mvn" do
-  to "/usr/bin/mvn"
+link "/usr/bin/mvn" do
+  to "#{node['maven']['m2_home']}bin/mvn" 
 end
