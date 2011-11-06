@@ -1,6 +1,6 @@
 #
 # Cookbook Name:: maven
-# Recipe:: maven3-src
+# Recipe:: maven3-bin
 #
 # Copyright 2011, Bryan W. Berry (<bryan.berry@gmail.com>)
 #
@@ -20,14 +20,14 @@
 include_recipe "java"
 
 remote_file "/tmp/apache-maven.tar.gz" do
-  source node['maven']['m3_download_url']
-  checksum node['maven']['m3_checksum']
+  source node['maven']['m2_download_url']
+  checksum node['maven']['m2_checksum']
 end
 
 directory node['maven']['m2_home']
 
-bash "install_maven3" do
-  folder_name = node['maven']['m3_download_url'].split('/')[-1].split('-bin.tar.gz')[0]
+bash "install_maven2" do
+  folder_name = node['maven']['m2_download_url'].split('/')[-1].split('-bin.tar.gz')[0]
   puts folder_name
   cwd "/tmp"
   user "root"
