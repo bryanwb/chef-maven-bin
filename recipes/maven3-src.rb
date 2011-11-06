@@ -21,7 +21,7 @@ include_recipe "java"
 
 remote_file "/tmp/apache-maven.tar.gz" do
   source node['maven']['m3_download_url']
-  checksum "4fb4a392d879ebcd19dc5a05f9d779aed7f1e3356c8c9e6200b15f8b6e1f85e0"
+  checksum node['maven']['m3_checksum']
 end
 
 directory node['maven']['m2_home']

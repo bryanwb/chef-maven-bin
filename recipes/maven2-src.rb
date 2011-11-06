@@ -1,8 +1,8 @@
 #
 # Cookbook Name:: maven
-# Recipe:: default
+# Recipe:: maven3-src
 #
-# Copyright 2010, Opscode, Inc.
+# Copyright 2011, Bryan W. Berry (<bryan.berry@gmail.com>)
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -19,26 +19,30 @@
 
 include_recipe "java"
 
-remote_file "maven3_src" do
-  path "/tmp"
-  source node['maven']['m3_download_url']
-  checksum "4fb4a392d879ebcd19dc5a05f9d779aed7f1e3356c8c9e6200b15f8b6e1f85e0"
+remote_file "/tmp/apache-maven.tar.gz" do
+  source node['maven']['m2_download_url']
+  checksum node['maven']['m2_checksum']
 end
 
-bash "install_maven3" do
+directory node['maven']['m2_home']
+
+bash "install_maven2" do
+  folder_name = node['maven']['m2_download_url'].split('/')[-1].split('-bin.tar.gz')[0]
+  puts folder_name
   cwd "/tmp"
   user "root"
   code <<-EOH
+    tar xvzf apache-maven.tar.gz
+    cp -r #{folder_name}/* #{node['maven']['m2_home']}
+    rm -rf apache-maven.tar.gz #{folder_name}
   EOH
 end
 
-
 template "/etc/mavenrc" do
-
+  source "mavenrc.erb"
+  mode "0755"
 end
 
-
 link "/usr/bin/mvn" do
-
-
+  to "#{node['maven']['m2_home']}bin/mvn" 
 end
